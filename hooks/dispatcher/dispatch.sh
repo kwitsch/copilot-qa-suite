@@ -27,7 +27,6 @@ set -euo pipefail
 source "${CLAUDE_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}/hooks/lib/config.sh"
 
 INPUT="$(cat)"
-TOOL_NAME="$(jq -r '.tool_name // empty' <<<"$INPUT")"
 FILE_PATH="$(jq -r '.tool_input.file_path // empty' <<<"$INPUT")"
 
 [[ -z "$FILE_PATH" ]] && exit 0

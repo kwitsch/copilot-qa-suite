@@ -18,7 +18,6 @@ fi
 
 # ---------- 1. Parse hook input ----------
 INPUT="$(cat)"
-TOOL_NAME="$(jq -r '.tool_name' <<<"$INPUT")"
 FILE_PATH="$(jq -r '.tool_input.file_path // empty' <<<"$INPUT")"
 
 # Validate file_path (a18) — silently exit on suspicious paths
