@@ -1,0 +1,37 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  bats:
+    name: bats
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bats + jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats jq
+
+      - name: Show versions
+        run: |
+          bash --version | head -1
+          bats --version
+          jq --version
+
+      - name: Run bats suite
+        run: bats -r tests/bats
+
+  shellcheck:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: ./hooks
+          severity: warning

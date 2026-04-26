@@ -1,0 +1,65 @@
+SOURCE_LANGUAGE: Go
+DOC FORMAT: godoc (compatible with pkg.go.dev and gopls)
+
+SYNTAX
+======
+godoc uses NO structured tags like @param. Documentation is free-form
+prose immediately before the declaration. There are strict conventions
+nonetheless.
+
+- Comment goes IMMEDIATELY before the declaration, NO blank line in
+  between.
+- Each line starts with `// `. Block comments `/* */` are allowed, but
+  line comments are idiomatic.
+- The first sentence MUST start with the name of the documented symbol
+  ('CalculateTotal returns ...', 'User represents ...').
+- The first sentence ends with a period and is used as the short summary.
+- Multiple paragraphs are separated by an empty `//` line.
+
+CONVENTIONS
+===========
+- Function: `// FuncName <does/returns/computes/...> ...`
+- Type: `// TypeName <represents/is a/holds/...> ...`
+- Method on a receiver: `// MethodName <...>` - WITHOUT the receiver in
+  the doc text.
+- Package doc in its own doc.go: `// Package <name> provides ...`
+- Constants and variables: `// VarName is the ...`
+- Deprecated: own paragraph after a blank `//` line, form:
+    `// Deprecated: use NewName instead.`
+
+PARAMETERS & RETURNS
+====================
+- Described as prose, not tags.
+- For multiple returns: explicitly state what each element means,
+  especially when returning `(T, error)`.
+- 'May be nil': mention explicitly.
+
+FORMATTING DETAILS
+==================
+- Indented code blocks (four spaces or tab after `// `) render as `<pre>`.
+- Markdown is NOT parsed - no backticks for code, no **bold**.
+- Identifiers are not specially formatted in prose. Renderers detect
+  them automatically.
+- URLs: write them plain, they auto-link.
+- 'BUG(name): ...' at the end of a file renders into a Bugs section.
+
+EXAMPLE
+=======
+// CalculateTotal returns the total price for the given items including
+// the supplied tax rate.
+//
+// taxRate is expected as a decimal (0.19 for 19%). If items is empty,
+// an error is returned and the total is 0.
+//
+// Deprecated: use BillingService.Total instead, which supports
+// multi-currency carts.
+func CalculateTotal(items []Item, taxRate float64) (float64, error) {
+    ...
+}
+
+// User represents an authenticated end user as stored in the session.
+//
+// Zero-value Users are not valid; always construct via NewUser.
+type User struct {
+    ...
+}

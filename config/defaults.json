@@ -1,0 +1,101 @@
+{
+  "_comment": "Default configuration for copilot-qa-suite. Override via ~/.config/copilot-qa-suite/config.json or per-project $CLAUDE_PROJECT_DIR/.claude/copilot-qa-suite.json or environment variables (see README).",
+
+  "copilot": {
+    "_comment": "model is the global fallback. Per-hook overrides live under <hook>.model. config_dir isolates Copilot CLI state (trusted_folders, model overrides, logs) from the user's interactive Copilot. Default ${CLAUDE_PLUGIN_DATA}/copilot — neutralizes contention with ~/.copilot/{settings,config}.json. github_token: GitHub PAT with the Copilot Requests scope. NEVER store this in a project-level config that gets committed; keep it in ~/.config/copilot-qa-suite/config.json (chmod 600) or in the COPILOT_QA_COPILOT_TOKEN env var. An existing COPILOT_GITHUB_TOKEN env var always wins — the wrapper only exports the config-resolved token when none is in scope already.",
+    "model": "auto",
+    "log_level": "error",
+    "config_dir": null,
+    "github_token": null,
+    "extra_args": []
+  },
+
+  "fallback": {
+    "_comment": "Context-instruction fallback. When Copilot CLI signals a token / quota / rate / usage limit, the wrapper emits the per-hook fallback-prompt.txt + CONTEXT block as additionalContext for the parent Claude session, which performs the read-only analysis itself. No second model is invoked — no model/timeout/extra_args needed. enabled: master switch (per-hook override <hook>.fallback.enabled). detection_patterns: ERE regex (case-insensitive) matched against Copilot stdout+stderr; on hit the wrapper emits the instruction.",
+    "enabled": true,
+    "detection_patterns": "rate.?limit|quota|premium request|monthly limit|usage limit|too many requests|429|exceeded.*limit|limit.*exceeded|insufficient.*(quota|credit)"
+  },
+
+  "timeouts": {
+    "default": 90,
+    "doc": 90,
+    "code_review": 90,
+    "unittest": 120,
+    "proguard": 120
+  },
+
+  "rate_limits": {
+    "code_review_seconds": 15,
+    "unittest_seconds": 20,
+    "proguard_seconds": 30
+  },
+
+  "limits": {
+    "_comment": "Claude Code caps each hook injection (additionalContext/systemMessage/stdout) at 10000 characters; overflow is spilled to disk by the harness with an undocumented preview format. We budget 8000 per hook (2K headroom for header + engine label + behavioural notes) and 24000 across all sub-hook outputs concatenated in dispatcher. spill_threshold_chars: above this size the hook writes the full body to a cache file and references it from additionalContext (controlled spill, sidesteps the harness preview). spill_to_file=false reverts to plain truncation at max_context_chars.",
+    "max_context_chars": 8000,
+    "max_combined_chars": 24000,
+    "spill_threshold_chars": 7000,
+    "spill_to_file": true
+  },
+
+  "languages": {
+    "code_review_extensions": [
+      "kt", "kts", "java", "scala", "groovy",
+      "ts", "tsx", "js", "jsx", "mjs", "cjs",
+      "py", "rb", "php", "go", "rs",
+      "c", "cc", "cpp", "cxx", "h", "hpp", "hxx", "swift"
+    ],
+    "unittest_extensions": [
+      "kt", "kts", "java", "scala", "groovy",
+      "ts", "tsx", "js", "jsx", "mjs", "cjs",
+      "py", "rb", "php", "go", "rs",
+      "c", "cc", "cpp", "cxx", "h", "hpp", "hxx", "swift"
+    ]
+  },
+
+  "hooks_enabled": {
+    "doc": true,
+    "code_review": true,
+    "unittest": true,
+    "proguard": true,
+    "check_copilot": true
+  },
+
+  "doc": {
+    "_comment": "comment_language is the natural language used in the generated doc comments. Use a name Copilot will recognize: 'English', 'German' (or 'Deutsch'), 'French', 'Spanish', 'Japanese', etc. Identifiers, types, and code snippets always stay in the source language. model overrides copilot.model for this hook only. fallback.enabled overrides the global fallback section (null = inherit).",
+    "comment_language": "English",
+    "model": null,
+    "fallback": { "enabled": null }
+  },
+
+  "code_review": {
+    "_comment": "max_findings caps how many findings Copilot may emit per file. Helps keep additionalContext within max_context_chars and reduces fix-fatigue. model overrides copilot.model for this hook only. fallback.enabled overrides the global fallback section (null = inherit).",
+    "max_findings": 5,
+    "model": null,
+    "fallback": { "enabled": null }
+  },
+
+  "unittest": {
+    "_comment": "Unit tests are emitted WITHOUT comments — documentation is added afterwards by the doc hook when it fires on the new test file. model overrides copilot.model for this hook only. fallback.enabled overrides the global fallback section (null = inherit).",
+    "model": null,
+    "fallback": { "enabled": null }
+  },
+
+  "proguard": {
+    "_comment": "model overrides copilot.model for this hook only. fallback.enabled overrides the global fallback section (null = inherit).",
+    "model": null,
+    "fallback": { "enabled": null }
+  },
+
+  "check_copilot": {
+    "_comment": "auto_trust_folder=true: SessionStart hook adds CWD to plugin-private trusted_folders automatically (security decision — default false). inherit_user_trust=true: on first run per project, copy matching trusted_folders from ~/.copilot/{settings,config}.json into the plugin's private config dir (default false; one-time consent recorded in inherit_consent.marker).",
+    "auto_trust_folder": false,
+    "inherit_user_trust": false
+  },
+
+  "cleanup": {
+    "_comment": "SessionEnd cleanup. cache_max_age_days prunes file-content cache shards older than N days; copilot_logs_max_age_days prunes Copilot CLI's own session logs in the plugin-private config dir. Set either to 0 to disable that pruning step.",
+    "cache_max_age_days": 7,
+    "copilot_logs_max_age_days": 14
+  }
+}

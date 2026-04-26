@@ -1,0 +1,44 @@
+SOURCE_LANGUAGE: Kotlin
+DOC FORMAT: KDoc
+
+SYNTAX
+======
+- Block starts with /** on its own line, every continuation line starts
+  with ' * ' (space, asterisk, space), closes with ' */'.
+- Indentation matches the function/class declaration exactly.
+- First line: concise, active one-liner. NO 'This function ...'.
+- Blank line before the block tags.
+
+BLOCK TAGS (in this order, only when applicable)
+================================================
+@param <name> <description ending with a period.>
+@return <description ending with a period.>      (only when return type != Unit)
+@throws <FullyQualified.Exception> <reason.>
+@see <reference>
+@sample <FullyQualified.Name>
+@property <name> <description.>                  (in class KDoc, for
+                                                  data class properties)
+
+RULES
+=====
+- Identifiers in backticks: `userId`, `Result.Failure`.
+- Markdown is allowed: **bold**, `code`, [Link]-style KDoc references.
+- @param: name without colon, description ends with a period.
+- @return only when the return type is not Unit.
+- @throws: fully qualified exception name. Cover both `throws {}` clauses
+  and explicit `throw` statements in the body.
+- For `data class`: place @property in the class KDoc, not on each
+  constructor parameter.
+- Suspending functions: mention they are suspending in the description
+  when relevant for the caller (coroutine context).
+
+EXAMPLE
+=======
+/**
+ * Calculates the gross total including value-added tax.
+ *
+ * @param items List of line items to total.
+ * @param taxRate Tax rate as a decimal (e.g. `0.19` for 19 %).
+ * @return Gross total in the same currency as the line items.
+ * @throws kotlin.IllegalArgumentException When `items` is empty.
+ */

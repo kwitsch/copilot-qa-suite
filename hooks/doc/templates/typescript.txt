@@ -1,0 +1,67 @@
+SOURCE_LANGUAGE: TypeScript
+DOC FORMAT: TSDoc (compatible with TypeDoc, API Extractor, JSDoc renderers)
+
+SYNTAX
+======
+- Block starts with /** on its own line, every continuation line with
+  ' * ', closes with ' */'.
+- Indentation matches the function/class/method declaration exactly.
+- First line: concise, active one-liner. NO 'This function ...'.
+- Blank line before the block tags.
+
+BLOCK TAGS (in this order, only when applicable)
+================================================
+@param      <n> - <description ending with a period.>
+@returns    <description ending with a period.>
+@throws     <reason.>
+@typeParam  <T> - <description of the generic parameter.>
+@remarks    <multi-sentence elaboration if needed>
+@example    <indented code example block>
+@see        <reference>
+@deprecated <reason + migration hint.>
+
+CRITICAL TSDoc RULE
+===================
+NO type annotations in @param or @returns!
+The types come from the TypeScript signature. Only name + description.
+
+  WRONG:   @param {string} name - the name
+  RIGHT:   @param name - the name
+
+INLINE TAGS
+===========
+- {@link FullyQualified.Name}        - clickable symbol reference
+- {@link FullyQualified.Name | text} - reference with anchor text
+- {@inheritDoc OtherSymbol}          - inherit doc from a base symbol
+- `code`                             - Markdown backticks for identifiers
+
+RULES
+=====
+- Separate the @param name from the description with a hyphen:
+  `name - description`.
+- For destructured object parameters, document the properties individually:
+    @param options - Configuration.
+    @param options.timeout - Timeout in milliseconds.
+- @returns: no type, only a description.
+- @throws: do not put the error class as a type tag - use Markdown code
+  in the description instead: `@throws \`RangeError\` when ...`
+- For async functions/methods: mention what the Promise resolves with in
+  the first line.
+- Document type aliases and interfaces the same way as classes.
+- @typeParam for generics: `@typeParam T - Element type of the list.`
+
+EXAMPLE
+=======
+/**
+ * Calculates the gross total including value-added tax.
+ *
+ * @param items - Line items to total.
+ * @param taxRate - Tax rate as a decimal (e.g. `0.19` for 19 %).
+ * @returns Gross total as a `number`.
+ * @throws `RangeError` when `items` is empty.
+ *
+ * @example
+ * ```ts
+ * const total = calculateTotal([{ price: 10, quantity: 2 }], 0.19);
+ * ```
+ */

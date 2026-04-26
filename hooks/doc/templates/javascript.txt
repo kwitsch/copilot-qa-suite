@@ -1,0 +1,59 @@
+SOURCE_LANGUAGE: JavaScript
+DOC FORMAT: JSDoc
+
+SYNTAX
+======
+- Block starts with /** on its own line, every continuation line with
+  ' * ', closes with ' */'.
+- Indentation matches the function/class/method declaration exactly.
+- First line: concise, active one-liner. NO 'This function ...'.
+- Blank line before the block tags.
+
+BLOCK TAGS (in this order, only when applicable)
+================================================
+@param   {Type} name             <description ending with a period.>
+@param   {Type} [name=default]   <optional parameter with default.>
+@param   {Type} [name]           <optional parameter without default.>
+@returns {Type}                  <description ending with a period.>
+@throws  {ErrorType}             <reason.>
+@async                           (for async functions)
+@deprecated                      <reason + migration hint.>
+@see     <reference>
+@example <short code example>
+
+TYPE EXPRESSION RULES
+=====================
+- Primitives: {string}, {number}, {boolean}, {null}, {undefined}, {bigint}, {symbol}
+- Object/Array: {Object}, {Object<string, number>}, {Array<string>}, {string[]}
+- Function types: {function(string, number): boolean}
+- Union: {string|number}
+- Optional in type position: {string=}    (alternative to bracket form)
+- Nullable: {?string}
+- Non-nullable: {!string}
+- Generics for classes: {Promise<User>}, {Map<string, User>}
+- 'Anything': {*}    (use sparingly - only when truly any)
+
+RULES
+=====
+- For async functions, use @async AND describe the resolved value via
+  @returns {Promise<T>}.
+- For object/options parameters, document sub-properties:
+    @param {Object} options
+    @param {string} options.name
+    @param {number} [options.timeout=5000]
+- Class constructors: @class and @constructor are redundant - omit them.
+- For ES module exports: do not place @module on each function, only once
+  per file.
+- TypeScript-style annotations as @type comments are out of scope - use
+  .ts files for that.
+
+EXAMPLE
+=======
+/**
+ * Calculates the gross total including value-added tax.
+ *
+ * @param {Array<{price: number, quantity: number}>} items Line items to total.
+ * @param {number} taxRate Tax rate as a decimal (e.g. `0.19`).
+ * @returns {number} Gross total as a Number.
+ * @throws {RangeError} When `items` is empty.
+ */

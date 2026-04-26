@@ -1,0 +1,97 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install bats + jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bats jq
+
+      - name: Verify plugin.json version matches tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          tag="${tag%%-*}"
+          plugin_version="$(jq -r '.version' .claude-plugin/plugin.json)"
+          if [ "$tag" != "$plugin_version" ]; then
+            echo "::error::tag '$GITHUB_REF_NAME' (parsed: $tag) does not match plugin.json version '$plugin_version'"
+            exit 1
+          fi
+          echo "version matches: $plugin_version"
+
+      - name: Run bats suite
+        run: bats -r tests/bats
+
+      - name: Build plugin tarball
+        run: |
+          name="copilot-qa-suite-${GITHUB_REF_NAME}"
+          mkdir -p dist
+          git archive \
+            --format=tar.gz \
+            --prefix="${name}/" \
+            -o "dist/${name}.tar.gz" \
+            "$GITHUB_REF_NAME"
+          ( cd dist && sha256sum "${name}.tar.gz" >"${name}.tar.gz.sha256" )
+          ls -la dist/
+
+      - name: Resolve previous tag
+        id: prev_tag
+        run: |
+          prev="$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)"
+          echo "prev=$prev" >>"$GITHUB_OUTPUT"
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          {
+            echo 'notes<<RELEASE_NOTES_EOF'
+            echo "## ${GITHUB_REF_NAME}"
+            echo ""
+            if [ -n "${{ steps.prev_tag.outputs.prev }}" ]; then
+              echo "### Changes since ${{ steps.prev_tag.outputs.prev }}"
+              echo ""
+              git log --pretty='- %s (%h)' \
+                "${{ steps.prev_tag.outputs.prev }}..${GITHUB_REF_NAME}"
+            else
+              echo "### Changes"
+              echo ""
+              git log --pretty='- %s (%h)' "${GITHUB_REF_NAME}"
+            fi
+            echo ""
+            echo "### Verification"
+            echo ""
+            echo "- bats suite: $(grep -rE '^@test' tests/bats | wc -l) tests"
+            echo "- shasum:"
+            echo '```'
+            cat dist/*.sha256
+            echo '```'
+            echo RELEASE_NOTES_EOF
+          } >>"$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: ${{ steps.notes.outputs.notes }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            dist/*.tar.gz
+            dist/*.sha256

@@ -1,0 +1,79 @@
+SOURCE_LANGUAGE: Rust
+DOC FORMAT: rustdoc (Markdown-based, rendered on docs.rs)
+
+SYNTAX
+======
+- Item docs (function, struct, enum, trait, method): `///` per line,
+  immediately BEFORE the item, NO blank line in between.
+- Container docs (modules, crate from inside): `//!` per line, at the
+  TOP of the file or right after `mod foo {`.
+- Block-comment variant: `/** */` and `/*! */` are allowed, but `///`
+  is idiomatic.
+- No required '//\* ' prefix - one space after `///`, then Markdown.
+
+STRUCTURE
+=========
+1. First line: concise one-liner ending with a period. Shown as the
+   summary on docs.rs.
+2. Blank line.
+3. Optional: longer description in one or more Markdown paragraphs.
+4. Optional: standardized Markdown sections (in order):
+   - `# Errors`        - when returning Result<_, E> or similar
+   - `# Panics`        - when the function may panic
+   - `# Safety`        - REQUIRED for `unsafe fn`
+   - `# Examples`      - with code block(s)
+
+MARKDOWN RULES
+==============
+- Code identifiers in backticks: `Vec<T>`, `Option::None`.
+- Cross-references in brackets to crate items: `[Self::method]`,
+  `[crate::module::Type]`. rustdoc resolves them automatically.
+- Code blocks with triple backticks. By default code is run as a doctest -
+  if not desired, mark with `ignore`, `no_run`, or `text`:
+    ```ignore
+    not_a_real_function();
+    ```
+- Inside doctests: `#` at the start of a line hides it from rendering
+  but still compiles.
+
+WHAT NOT TO DO
+==============
+- No @param / @return tags. Parameters are described in prose or via
+  Markdown lists with `*`.
+- Do not repeat type annotations - the signature already says them.
+- `# Arguments` / `# Returns` headers are common in some crates but not
+  official - use them only when the project does so consistently.
+
+FUNCTION EXAMPLE
+================
+/// Calculates the gross total including value-added tax.
+///
+/// `tax_rate` is expected as a decimal (`0.19` for 19 %). The function
+/// requires a non-empty `items` list; otherwise it returns an error.
+///
+/// # Errors
+///
+/// Returns [`PricingError::EmptyCart`] when `items` is empty.
+///
+/// # Examples
+///
+/// ```
+/// # use crate_name::{Item, calculate_total};
+/// let items = vec![Item::new(10.0, 2)];
+/// let total = calculate_total(&items, 0.19).unwrap();
+/// assert!((total - 23.80).abs() < f64::EPSILON);
+/// ```
+pub fn calculate_total(items: &[Item], tax_rate: f64) -> Result<f64, PricingError> {
+    ...
+}
+
+UNSAFE EXAMPLE
+==============
+/// Writes `value` to the address `ptr` without bounds or alignment checks.
+///
+/// # Safety
+///
+/// The caller must guarantee that `ptr` points to a valid, writable
+/// memory region of at least `size_of::<T>()` bytes and that the
+/// alignment is correct.
+pub unsafe fn write_unchecked<T>(ptr: *mut T, value: T) { ... }

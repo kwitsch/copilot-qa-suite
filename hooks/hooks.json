@@ -1,0 +1,44 @@
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/compile-config/compile.sh",
+          "timeout": 15,
+          "statusMessage": "Compiling copilot-qa-suite config..."
+        },
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/check-copilot/check.sh",
+          "timeout": 10,
+          "statusMessage": "Verifying Copilot setup..."
+        }
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": "Edit|Write|MultiEdit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/dispatcher/dispatch.sh",
+          "timeout": 150,
+          "statusMessage": "copilot-qa-suite: analyzing edit..."
+        }
+      ]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "${CLAUDE_PLUGIN_ROOT}/hooks/cleanup/cleanup.sh",
+          "timeout": 10
+        }
+      ]
+    }
+  ]
+}

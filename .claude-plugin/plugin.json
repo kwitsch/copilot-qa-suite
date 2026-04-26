@@ -1,0 +1,24 @@
+{
+  "name": "copilot-qa-suite",
+  "version": "0.5.0",
+  "description": "Post-edit quality assurance for Claude Code, using the GitHub Copilot CLI as a strictly read-only analyst. Single-dispatcher PostToolUse architecture (no parallel fan-out), multi-language doc maintenance (Kotlin, Java, JS, TS, Go, Rust) with configurable comment language, code review across 15+ languages with configurable finding cap, test-coverage analysis with framework detection, ProGuard/R8 rule validation. Per-hook model selection. Plugin-private Copilot config dir. Claude writes, Copilot thinks.",
+  "author": {
+    "name": "Emvion"
+  },
+  "keywords": [
+    "hooks",
+    "copilot",
+    "code-review",
+    "doc",
+    "kdoc",
+    "javadoc",
+    "tsdoc",
+    "godoc",
+    "rustdoc",
+    "unit-tests",
+    "proguard",
+    "quality"
+  ],
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json"
+}

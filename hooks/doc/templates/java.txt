@@ -1,0 +1,46 @@
+SOURCE_LANGUAGE: Java
+DOC FORMAT: Javadoc
+
+SYNTAX
+======
+- Block starts with /** on its own line, every continuation line with
+  ' * ' (space, asterisk, space), closes with ' */'.
+- Indentation matches the method/class declaration exactly.
+- First line: concise, active one-liner. NO 'This method ...'.
+- First line ends with a period - Javadoc uses it as the short summary
+  on overview pages.
+- Blank line before the block tags.
+
+BLOCK TAGS (in this order, only when applicable)
+================================================
+@param <n> <description ending with a period.>
+@return <description ending with a period.>     (only when return type != void)
+@throws <FullyQualifiedException> <reason.>     (both checked and unchecked)
+@see <reference>                                 (e.g. {@link OtherClass})
+@since <version>                                 (only if used by the project)
+@deprecated <reason + migration hint.>           (when @Deprecated is present)
+
+RULES
+=====
+- Inline tags for cross-references:
+    {@link FullyQualified.Name}      - clickable reference
+    {@code identifier}               - monospace without HTML escaping
+    {@literal text}                  - literal text, special chars allowed
+- HTML tags allowed in descriptions: <p>, <code>, <em>, <ul><li>. Use
+  sparingly - prefer {@code ...} over <code>...</code>.
+- For generic types: @param <T> Description of the type parameter.
+- Document RuntimeExceptions with @throws when they are thrown
+  intentionally (e.g. IllegalArgumentException for validation).
+- @return is NEVER used for void methods or constructors.
+- Always include @deprecated when the @Deprecated annotation is present.
+
+EXAMPLE
+=======
+/**
+ * Calculates the gross total including value-added tax.
+ *
+ * @param items   List of line items to total.
+ * @param taxRate Tax rate as a decimal (e.g. {@code 0.19} for 19 %).
+ * @return Gross total in the same currency as the line items.
+ * @throws java.lang.IllegalArgumentException When {@code items} is empty.
+ */
