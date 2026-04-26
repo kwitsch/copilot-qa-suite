@@ -64,38 +64,10 @@ automatically (see below).
 
 ## Installation
 
-### Option 1: development mode (recommended for testing)
+Install via the Claude Code plugin marketplace:
 
 ```bash
-tar xzf copilot-qa-suite.tar.gz -C ~/claude-plugins/
-
-cd /your/project
-claude --plugin-dir ~/claude-plugins/copilot-qa-suite
-```
-
-Plugin changes are picked up via `/reload-plugins` without restarting
-Claude Code.
-
-### Option 2: symlink into user plugins (persistent)
-
-```bash
-tar xzf copilot-qa-suite.tar.gz -C ~/claude-plugins/
-mkdir -p ~/.claude/plugins
-ln -s ~/claude-plugins/copilot-qa-suite ~/.claude/plugins/copilot-qa-suite
-```
-
-Then enable it:
-
-```bash
-claude /plugin enable copilot-qa-suite
-```
-
-### Option 3: as a marketplace plugin
-
-Push the directory to GitHub, create a marketplace entry, then:
-
-```bash
-claude plugin install <org>/copilot-qa-suite
+claude plugin install kwitsch/copilot-qa-suite
 ```
 
 See the
