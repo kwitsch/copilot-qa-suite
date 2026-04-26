@@ -66,8 +66,16 @@ automatically (see below).
 
 Install via the Claude Code plugin marketplace:
 
+1. Add the repository as a plugin marketplace source:
+
 ```bash
-claude plugin install kwitsch/copilot-qa-suite
+claude plugin add-marketplace kwitsch/copilot-qa-suite
+```
+
+2. Install the plugin:
+
+```bash
+claude plugin install copilot-qa-suite
 ```
 
 See the
@@ -77,7 +85,7 @@ See the
 
 In a running Claude Code session:
 
-```
+```bash
 /hooks
 ```
 
