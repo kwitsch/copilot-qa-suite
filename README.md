@@ -64,18 +64,18 @@ automatically (see below).
 
 ## Installation
 
-Install via the Claude Code plugin marketplace:
+Install via the Claude Code plugin marketplace. Run the following commands in a Claude Code session:
 
 1. Add the repository as a plugin marketplace source:
 
 ```bash
-claude plugin add-marketplace kwitsch/copilot-qa-suite
+/plugin marketplace add kwitsch/copilot-qa-suite
 ```
 
 2. Install the plugin:
 
 ```bash
-claude plugin install copilot-qa-suite
+/plugin install copilot-qa-suite@kwitsch-copilot-qa-suite
 ```
 
 See the
